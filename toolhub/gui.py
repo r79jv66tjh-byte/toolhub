@@ -94,6 +94,27 @@ class App:
         self.root.after(1000, self._tick)
         self.root.after(100, self._drain_queue)
         self.root.after(150, self._initial_layout)
+        self.root.after(3000, self._check_updates)
+
+    # ------------------------------------------------------------------ Store
+    def open_store(self):
+        from .store_gui import StoreWindow
+        StoreWindow(self)
+
+    def _check_updates(self):
+        """Beim Start im Hintergrund nach Updates installierter Tools suchen (nur Anzeige)."""
+        from . import store
+
+        def work():
+            try:
+                ups = store.check_updates()
+            except Exception:  # noqa: BLE001 – Netzwerkprobleme nicht stören lassen
+                return
+            if ups:
+                names = ", ".join(u["name"] for u in ups)
+                self.ui_queue.put(lambda: (self.btn_store.config(text=f"🛒 Store ({len(ups)} ⬆)"),
+                                           self.set_status(f"Updates verfügbar: {names} – im Store installieren")))
+        threading.Thread(target=work, daemon=True).start()
 
     def _initial_layout(self, tries: int = 20):
         """Bereich „Laufende Programme“ klein halten (ca. 4 Zeilen)."""
@@ -121,6 +142,8 @@ class App:
         ttk.Button(bar, text="💬 Claude fragen", command=self.ask_claude).pack(side="right", padx=4)
         ttk.Button(bar, text="🤖 Claude verbinden", command=self.connect_claude).pack(side="right", padx=4)
         ttk.Button(bar, text="+ Programm hinzufügen", command=self.add_program).pack(side="right", padx=4)
+        self.btn_store = ttk.Button(bar, text="🛒 Store", command=self.open_store)
+        self.btn_store.pack(side="right", padx=4)
         ttk.Button(bar, text="⟳ Neu scannen", command=self.rescan).pack(side="right", padx=4)
 
     def _build_body(self):
@@ -564,7 +587,8 @@ class App:
 
     # ------------------------------------------------------------------ Aktionen
     def rescan(self, quiet=False):
-        roots = self.cfg.settings.get("scan_roots", [])
+        from .store import apps_dir
+        roots = list(dict.fromkeys([str(apps_dir())] + list(self.cfg.settings.get("scan_roots", []))))
         self.set_status("Suche Programme in " + "; ".join(roots) + " …")
 
         def work():

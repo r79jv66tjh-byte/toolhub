@@ -1,0 +1,114 @@
+{
+  "version": 1,
+  "owner": "r79jv66tjh-byte",
+  "tools": [
+    {
+      "name": "DownloadSorter",
+      "repo": "downloadsorter",
+      "category": "Aufräumen & Ordnung",
+      "description": "Scannt den Downloads-Ordner, ordnet Dateien Kategorien zu (Installer, Archive, Dokumente, Bilder, Videos, Musik, Torrents, Code, Sonstiges), findet Duplikate und Aufräum-Kandidaten, zeigt die Download-Herkunft und sortiert Dateien in Unterordner – mit Vorschau (--dry-run) und Rückgängig. Löscht nie etwas.",
+      "modes": [
+        "python",
+        "exe"
+      ],
+      "admin": false,
+      "note": ""
+    },
+    {
+      "name": "TidyKit",
+      "repo": "tidykit",
+      "category": "Aufräumen & Ordnung",
+      "description": "Windows aufräumen: Programmreste und leere Ordner finden, Autostart prüfen und schalten, Dateien massenhaft umbenennen, zwei Ordner vergleichen und abgleichen. Löschen nur in den Papierkorb; jede Änderung landet im Verlauf und ist mit 'undo' rückgängig zu machen.",
+      "modes": [
+        "python",
+        "exe"
+      ],
+      "admin": false,
+      "note": ""
+    },
+    {
+      "name": "FileProbe",
+      "repo": "fileprobe",
+      "category": "Daten & Dateien untersuchen",
+      "description": "Untersucht Dateien und Spieldaten unter Windows: Dateiformat erkennen (auch ohne Endung, verschlüsselt/komprimiert/XOR), Spiel-Archive auflisten und entpacken (ZIP/PK3, Doom-WAD, WAD3, Quake-PAK, Unreal-PAK, Unity-Bundle, VPK, Godot-PCK), Registry-Snapshots vergleichen und beobachten, welche Dateien ein Programm schreibt. Liest nur; untersuchte Dateien und die Registry werden nie verändert, nichts wird ausgeführt.",
+      "modes": [
+        "python",
+        "exe"
+      ],
+      "admin": false,
+      "note": ""
+    },
+    {
+      "name": "GameWarden",
+      "repo": "gamewarden",
+      "category": "Spiele & Mods",
+      "description": "Steam-/Epic-Spielebibliothek analysieren (Platz, zuletzt gespielt, Deinstallations-Vorschläge), Spiele zwischen Laufwerken verschieben, Screenshots nach Spiel sortieren, Controller-Profile umschalten.",
+      "modes": [
+        "python",
+        "exe"
+      ],
+      "admin": false,
+      "note": ""
+    },
+    {
+      "name": "MemTrainer",
+      "repo": "memtrainer",
+      "category": "Trainer",
+      "description": "Speicher-Scanner und Trainer für Singleplayer-Spiele: Prozesse finden, Werte (Gold, HP …) im Spielspeicher suchen, lesen und ändern, Byte-Muster/Text suchen, Spielgeschwindigkeit ändern. Nur für Offline-/Singleplayer-Spiele.",
+      "modes": [
+        "python",
+        "exe"
+      ],
+      "admin": false,
+      "note": "Nur für Singleplayer. Virenscanner melden Speicher-Tools manchmal fälschlich als „Hacktool“."
+    },
+    {
+      "name": "SafeKeep",
+      "repo": "safekeep",
+      "category": "Sicherheit & Backup",
+      "description": "Versionierte Ordner-Backups (Zeitmaschine, z. B. für Spielstände) mit Wiederherstellung, plus Musik-Duplikat-Finder. Gelöscht wird nur in den Papierkorb; vor dem Überschreiben wird der aktuelle Stand automatisch gesichert.",
+      "modes": [
+        "python",
+        "exe"
+      ],
+      "admin": false,
+      "note": ""
+    },
+    {
+      "name": "DiskFormatter",
+      "repo": "diskformatter",
+      "category": "Laufwerke & USB",
+      "description": "Laufwerke formatieren (NTFS, exFAT, FAT32) und vorher sicher mit Nullen überschreiben – nur ein Volume oder den ganzen Datenträger inkl. Partitionstabelle, z. B. vor dem Verkauf eines USB-Sticks. System-/Windows-Datenträger sind immer gesperrt, interne Platten nur nach Freischalten in der GUI.",
+      "modes": [
+        "python",
+        "exe"
+      ],
+      "admin": true,
+      "note": "Verändert Datenträger – Systemlaufwerk ist gesperrt, trotzdem vorher Backups machen."
+    },
+    {
+      "name": "PartitionEditor",
+      "repo": "partitioneditor",
+      "category": "Laufwerke & USB",
+      "description": "Partitionen bearbeiten wie in der Datenträgerverwaltung: anlegen (mit Formatieren), löschen, vergrößern/verkleinern (NTFS), Laufwerksbuchstabe und Name ändern, aktiv setzen (MBR), aus-/einblenden, leere Datenträger zwischen MBR und GPT umstellen bzw. initialisieren. Jede Änderung erst als Vorschau vorher → nachher; mehrere Änderungen können gemeinsam angewendet werden. System-/Windows-Datenträger sind immer gesperrt, interne Platten nur nach Freischalten in der GUI.",
+      "modes": [
+        "python",
+        "exe"
+      ],
+      "admin": true,
+      "note": "Verändert Datenträger – Systemlaufwerk ist gesperrt, trotzdem vorher Backups machen."
+    },
+    {
+      "name": "IsoFlasher",
+      "repo": "isoflasher",
+      "category": "Laufwerke & USB",
+      "description": "Bootfähige USB-Sticks erstellen: Linux-/Tool-ISOs 1:1 schreiben und per Prüfsumme kontrollieren, Windows-Installationssticks (GPT/MBR, install.wim teilen, Windows-11-Anpassungen), Multiboot mit Ventoy, Persistenz für Linux-Live-Sticks, Sticks/SD-Karten als Abbild sichern und zurückschreiben, offizielle ISOs laden. Ziel dürfen nur USB-Sticks und SD-Karten sein; System- und interne Platten sind immer gesperrt.",
+      "modes": [
+        "python",
+        "exe"
+      ],
+      "admin": true,
+      "note": "Überschreibt USB-Sticks vollständig. Lizenz: GPLv3."
+    }
+  ]
+}

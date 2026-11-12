@@ -64,7 +64,8 @@ class Tool:
 class Hub:
     def __init__(self, roots: list[str] | None = None):
         settings = Config().load().settings
-        self.roots = roots or settings.get("scan_roots") or []
+        from .store import apps_dir  # vom Store installierte Tools immer mit einbeziehen
+        self.roots = roots or list(dict.fromkeys([str(apps_dir())] + list(settings.get("scan_roots") or [])))
         self.only_tools = settings.get("only_tools", True)
         self.running: dict[str, list[launcher.Running]] = {}
         self._proc_cache: tuple[float, list[dict]] = (0.0, [])

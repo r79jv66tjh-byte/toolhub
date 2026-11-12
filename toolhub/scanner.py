@@ -146,12 +146,15 @@ def manifest_category(folder: Path) -> str:
     """Kategorie aus toolhub.json ("category"), falls dort eine gültige angegeben ist."""
     import json
     from .config import CATEGORIES
-    try:
-        data = json.loads((folder / "toolhub.json").read_text(encoding="utf-8-sig"))
-    except (OSError, ValueError):
-        return ""
-    cat = data.get("category") if isinstance(data, dict) else None
-    return cat if cat in CATEGORIES else ""
+    for fn in ("toolhub.json", INSTALL_FILE):
+        try:
+            data = json.loads((folder / fn).read_text(encoding="utf-8-sig"))
+        except (OSError, ValueError):
+            continue
+        cat = data.get("category") if isinstance(data, dict) else None
+        if cat in CATEGORIES:
+            return cat
+    return ""
 
 
 def known_category(*names: str) -> str:
@@ -304,6 +307,11 @@ def scan_project(folder: Path) -> list[dict]:
             else folder.name, f"{quote(pyw if gui else py)} -m {pkg}", "modul", not gui,
             script=main.parent / "__init__.py")
 
+    # 4a. vom Store als .exe installiert: <Tool>.exe direkt im Ordner
+    if (folder / INSTALL_FILE).is_file():
+        for exe in sorted(folder.glob("*.exe")):
+            add(exe.name, exe.stem, quote(exe.name), "exe", False)
+
     # 4. dist/*.exe
     norm = lambda n: re.sub(r"[^a-z0-9]", "", n.lower())  # noqa: E731
     for exe in sorted((folder / "dist").glob("*.exe")):
@@ -340,9 +348,13 @@ def scan_project(folder: Path) -> list[dict]:
     return entries
 
 
+INSTALL_FILE = ".toolhub-install.json"   # schreibt der Store bei jeder Installation
+
+
 def is_tool(folder: Path) -> bool:
-    """Ein Ordner gilt als Tool, wenn er eine toolhub.json hat (Claude-Schnittstelle)."""
-    return (folder / "toolhub.json").is_file()
+    """Ein Ordner gilt als Tool, wenn er eine toolhub.json hat (Claude-Schnittstelle)
+    oder vom Store installiert wurde."""
+    return (folder / "toolhub.json").is_file() or (folder / INSTALL_FILE).is_file()
 
 
 def scan_roots(roots: list[str], only_tools: bool = True) -> list[dict]:
