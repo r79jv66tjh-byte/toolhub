@@ -79,6 +79,7 @@ class LaunchError(Exception):
 TH32CS_SNAPPROCESS = 0x2
 PROCESS_TERMINATE = 0x0001
 PROCESS_QUERY_LIMITED_INFORMATION = 0x1000
+SYNCHRONIZE = 0x00100000
 
 if IS_WIN:
     class PROCESSENTRY32W(ctypes.Structure):
@@ -117,7 +118,9 @@ def process_list() -> list[tuple[int, int]]:
 
 def create_time(pid: int) -> int:
     """Startzeit eines laufenden Prozesses (FILETIME) oder 0, wenn er nicht (mehr) läuft."""
-    h = k32.OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, False, pid)
+    # SYNCHRONIZE ist nötig, sonst schlägt WaitForSingleObject fehl und jeder
+    # Prozess gälte als beendet.
+    h = k32.OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION | SYNCHRONIZE, False, pid)
     if not h:
         return 0
     try:
