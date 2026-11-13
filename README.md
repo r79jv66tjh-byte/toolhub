@@ -33,7 +33,9 @@ Als eigenständige `.exe` bauen: `build.bat` → `dist\ToolHub.exe`.
   Bearbeitete Einträge überschreibt der Scanner nicht mehr; entfernte kommen nicht wieder.
 - **Übersicht:** Kacheln oder Liste, Kategorien (Aufräumen & Ordnung, Spiele & Mods,
   Daten & Dateien untersuchen, Sicherheit & Backup, Trainer, Sonstiges), Favoriten, Suche (Strg+F).
-- **Starten** per Doppelklick/Enter, optional **als Administrator** (UAC-Abfrage).
+- **Starten** per Doppelklick/Enter, optional **als Administrator** (UAC-Abfrage). Verlangt eine `.exe`
+  selbst Adminrechte (z. B. mit `--uac-admin` gebaut), fragt ToolHub automatisch per UAC nach, statt mit
+  „Fehler 740“ abzubrechen.
 - **Laufende Programme** unten: PIDs und Laufzeit, **Beenden** (schließt erst die Fenster, nach 3 s hart)
   oder **Hart beenden**. Programme laufen weiter, wenn ToolHub geschlossen wird.
 - **Pro Programm:** Ordner öffnen, README anzeigen, Git-Status (Branch, letzter Commit, uncommittete

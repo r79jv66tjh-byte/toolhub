@@ -151,6 +151,44 @@ class LauncherTest(unittest.TestCase):
         with self.assertRaises(launcher.LaunchError):
             launcher.launch({"id": "x", "name": "x", "path": ".", "command": ""})
 
+    def test_exe_that_demands_admin_rights_is_started_via_uac(self):
+        # Windows refuses CreateProcess for an .exe whose manifest requires administrator rights
+        # (ERROR_ELEVATION_REQUIRED, e.g. PyInstaller --uac-admin). Popen and ShellExecuteExW are the
+        # OS boundary and are replaced here, so no UAC prompt appears during the test.
+        def refuse(*args, **kwargs):
+            raise OSError(22, "Der angeforderte Vorgang erfordert erhöhte Rechte.", None, 740)
+
+        elevated = []
+
+        def shell_execute(info_ref):
+            info = info_ref._obj
+            elevated.append((info.lpVerb, info.lpFile, info.lpParameters))
+            return 1
+
+        original_popen, original_shell = launcher.subprocess.Popen, launcher.shell32.ShellExecuteExW
+        launcher.subprocess.Popen = refuse
+        launcher.shell32.ShellExecuteExW = shell_execute
+        try:
+            with tempfile.TemporaryDirectory() as d:
+                write(Path(d) / "dist" / "App.exe", "")
+                r = launcher._launch({"id": "a", "name": "App", "path": d, "command": r"dist\App.exe"})
+                self.assertTrue(r.admin)
+                self.assertEqual(elevated, [("runas", "cmd.exe", f'/c cd /d "{d}" && dist\\App.exe')])
+        finally:
+            launcher.subprocess.Popen, launcher.shell32.ShellExecuteExW = original_popen, original_shell
+
+    def test_other_start_errors_are_reported(self):
+        def refuse(*args, **kwargs):
+            raise OSError(2, "Das System kann die angegebene Datei nicht finden.", None, 2)
+
+        original = launcher.subprocess.Popen
+        launcher.subprocess.Popen = refuse
+        try:
+            with self.assertRaisesRegex(launcher.LaunchError, "Start fehlgeschlagen"):
+                launcher._launch({"id": "a", "name": "App", "path": ".", "command": "gibtsnicht.exe"})
+        finally:
+            launcher.subprocess.Popen = original
+
     def test_resolve_relative_exe(self):
         with tempfile.TemporaryDirectory() as d:
             write(Path(d) / "dist" / "App.exe", "")
