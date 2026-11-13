@@ -27,6 +27,7 @@ CREATE_NO_WINDOW = 0x08000000
 JobObjectBasicProcessIdList = 3
 SEE_MASK_NOCLOSEPROCESS = 0x00000040
 SW_SHOWNORMAL = 1
+ERROR_ELEVATION_REQUIRED = 740
 WM_CLOSE = 0x0010
 WAIT_TIMEOUT = 0x102
 
@@ -73,6 +74,10 @@ if IS_WIN:
 
 class LaunchError(Exception):
     pass
+
+
+class ElevationRequired(LaunchError):
+    """The program's manifest demands administrator rights, which CreateProcess cannot grant."""
 
 
 # ------------------------------------------------------------ Prozessbaum
@@ -331,7 +336,11 @@ def _launch(prog: dict) -> Running:
         raise LaunchError(f"Ordner nicht gefunden: {cwd}")
     if prog.get("admin"):
         return _launch_admin(prog, command, cwd)
-    return _launch_job(prog, resolve_command(command, cwd or "."), cwd, bool(prog.get("console")))
+    try:
+        return _launch_job(prog, resolve_command(command, cwd or "."), cwd, bool(prog.get("console")))
+    except ElevationRequired:
+        # e.g. a PyInstaller --uac-admin build: start it the way Explorer does, with a UAC prompt
+        return _launch_admin(prog, command, cwd)
 
 
 def _launch_job(prog: dict, command: str, cwd, console: bool) -> Running:
@@ -344,6 +353,8 @@ def _launch_job(prog: dict, command: str, cwd, console: bool) -> Running:
                              stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
                              stderr=subprocess.DEVNULL, close_fds=True)
     except OSError as e:
+        if getattr(e, "winerror", None) == ERROR_ELEVATION_REQUIRED:
+            raise ElevationRequired(str(e)) from e
         raise LaunchError(f"Start fehlgeschlagen: {e}") from e
     job = k32.CreateJobObjectW(None, None)
     handle = wintypes.HANDLE(int(p._handle))  # noqa: SLF001 - Prozess-Handle von Popen
