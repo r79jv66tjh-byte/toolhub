@@ -109,6 +109,18 @@
       ],
       "admin": true,
       "note": "Überschreibt USB-Sticks vollständig. Lizenz: GPLv3."
+    },
+    {
+      "name": "LabManager",
+      "repo": "labmanager",
+      "category": "Sonstiges",
+      "description": "Zentrale für das Heim-Labor unter Hyper-V und Proxmox: VMs, Hosts und Dienste mit Live-Status und echtem RAM-Verbrauch, VMs starten und stoppen, Verbindungen per Remotedesktop, Web und SSH, Docker-Container und Proxmox-Backups. Eingerichtet wird alles im Reiter „Einstellungen“.",
+      "modes": [
+        "python",
+        "exe"
+      ],
+      "admin": true,
+      "note": "Hyper-V-VMs lassen sich nur mit Adminrechten abfragen und steuern; ohne Admin funktioniert alles andere."
     }
   ]
 }
