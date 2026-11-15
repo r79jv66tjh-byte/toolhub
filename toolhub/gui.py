@@ -88,7 +88,7 @@ class App:
         root.bind("<Delete>", lambda e: self.remove_selected())
 
         if cfg.settings.get("scan_on_start", True) or not cfg.programs:
-            self.rescan(quiet=True)
+            self.rescan()
         else:
             self.refresh()
         self.root.after(1000, self._tick)
@@ -167,7 +167,7 @@ class App:
         self._build_tiles(self.center)
         self._build_list(self.center)
 
-        # Rechts: Details
+        # Right-hand pane with the details
         self.detail = ttk.Frame(pw, padding=(10, 4), width=320)
         pw.add(self.detail, weight=1)
         self._build_detail(self.detail)
@@ -586,7 +586,7 @@ class App:
         self.root.after(1000, self._tick)
 
     # ------------------------------------------------------------------ Aktionen
-    def rescan(self, quiet=False):
+    def rescan(self):
         from .store import apps_dir
         roots = list(dict.fromkeys([str(apps_dir())] + list(self.cfg.settings.get("scan_roots", []))))
         self.set_status("Suche Programme in " + "; ".join(roots) + " …")
@@ -595,7 +595,9 @@ class App:
             try:
                 found = scanner.scan_roots(roots, self.cfg.settings.get("only_tools", True))
             except Exception as e:  # noqa: BLE001
-                self.ui_queue.put(lambda: self.set_status(f"Scan fehlgeschlagen: {e}"))
+                # Python deletes e when the except block ends, before the queue runs the callback.
+                message = f"Scan fehlgeschlagen: {e}"
+                self.ui_queue.put(lambda: self.set_status(message))
                 return
 
             def done():
@@ -725,7 +727,7 @@ class App:
                 "Das Ergebnis landet im Unterordner „dist“. Fortfahren?", parent=self.root):
             return
         OutputWindow(self.root, f"Build – {p['name']}", cmd, p["path"],
-                     on_done=lambda rc: rc == 0 and self.rescan(quiet=True))
+                     on_done=lambda rc: rc == 0 and self.rescan())
 
     @staticmethod
     def _pyinstaller_cmd(p: dict) -> str:
