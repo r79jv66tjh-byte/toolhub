@@ -155,7 +155,7 @@ class LauncherTest(unittest.TestCase):
         # Windows refuses CreateProcess for an .exe whose manifest requires administrator rights
         # (ERROR_ELEVATION_REQUIRED, e.g. PyInstaller --uac-admin). Popen and ShellExecuteExW are the
         # OS boundary and are replaced here, so no UAC prompt appears during the test.
-        def refuse(*args, **kwargs):
+        def refuse(*_args, **_kwargs):
             raise OSError(22, "Der angeforderte Vorgang erfordert erhöhte Rechte.", None, 740)
 
         elevated = []
@@ -178,7 +178,7 @@ class LauncherTest(unittest.TestCase):
             launcher.subprocess.Popen, launcher.shell32.ShellExecuteExW = original_popen, original_shell
 
     def test_other_start_errors_are_reported(self):
-        def refuse(*args, **kwargs):
+        def refuse(*_args, **_kwargs):
             raise OSError(2, "Das System kann die angegebene Datei nicht finden.", None, 2)
 
         original = launcher.subprocess.Popen

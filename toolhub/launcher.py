@@ -192,7 +192,6 @@ class Running:
     """Ein laufendes (oder schon beendetes) Programm."""
 
     def __init__(self, prog: dict, job=None, popen=None, handle=None, admin=False):
-        self.prog_id = prog["id"]
         self.name = prog.get("name") or prog["id"]
         self.started = time.time()
         self.job = job
